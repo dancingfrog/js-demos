@@ -11,7 +11,7 @@ var sBuffer = [],
 	appDelay = 0,
 	statsBox = document.createElement('div');
 statsBox.id = 'statBox';
-statsBox.style.width = statsBox.style.minWidth = statsBox.style.maxWidth = 
+statsBox.style.width = statsBox.style.minWidth = statsBox.style.maxWidth =
 statsBox.style.height = statsBox.style.minHeight = statsBox.style.maxHeight = "120px";
 statsBox.style.position = "relative";
 statsBox.style.marginTop = "-180px";
@@ -26,24 +26,24 @@ var canvasApp = function canvasApp(cv) {
 
 	/* START Global Vars */
 	window.audio = window.aud1;
-	window.audioLoad = false; 
+	window.audioLoad = false;
 	window.audioReady = false;
 	window.audioName = audio.children[0].src.match(/[\/|\\]*([\w|\-|]+)\.\w\w\w$/)[1];
 	window.audio.onloadstart = (typeof audio.onloadstart === "object")?
-		function() { audioLoad = true; return audioLoad; } : 
+		function() { audioLoad = true; return audioLoad; } :
 		(function(){ audioLoad = true; return {audioLoad:true}; })();
 	window.audio.oncanplaythrough = (typeof audio.oncanplaythrough === "object")?
-	  function() { 
-		Debugger.log("audio is ready"); 
+	  function() {
+		Debugger.log("audio is ready");
 		audioReady = true;
-		return audioReady; 
-	  } : 
+		return audioReady;
+	  } :
 	  (function() {
 		/*
 		Debugger.log( "Inline video is not supported\n" );
 		return false;
 		*/
-		audioReady = true; 
+		audioReady = true;
 		return {audioReady:true};
 	  })();
 	window.canvasApp.canDrawVideo = true;
@@ -71,7 +71,7 @@ var canvasApp = function canvasApp(cv) {
 				height = window.innerHeight;
 			//Debugger.log( "width: "+ width +" mouse x: "+ evt.clientX );
 			var strokeB, strokeR = canvasApp.strokeStyle.match(/rgba\((\d+)\%/)[1];
-			if( strokeR === null ) { 
+			if( strokeR === null ) {
 				strokeR = 50;
 			} else {
 				strokeR = parseFloat(strokeR)/2;
@@ -87,7 +87,7 @@ var canvasApp = function canvasApp(cv) {
 			//Debugger.log( canvasApp.strokeStyle );
 		}, 33, evt);
 	};
-  
+
   /* Insert loader just after the canvas */
   if( document.getElementById('statBox') === null )
     canvas.parentNode.appendChild(statsBox);
@@ -104,19 +104,19 @@ var canvasApp = function canvasApp(cv) {
 	} else {
 		part = pr;
 	}
-	  
+
 	if( (pr > 99) || (part > 99) ) {
 		clearTimeout(fftLoader);
 		return true;
 	} else {
 		var sr = document.createElement('script'),
-			fname = (part < 10)? 
+			fname = (part < 10)?
 				( location.pathname.match(/(?:visualizer\.html|happy-b-day\.html)/) !== null )?
 					"data/"+ aname +"-0"+ part +".js":
-					"/js-demos/data/"+ aname +"-0"+ part +".js" :
+					"https://s3-us-west-1.amazonaws.com/real-currents/js-demos/data/"+ aname +"-0"+ part +".js" :
 				( location.pathname.match(/(?:visualizer\.html|happy-b-day\.html)/) !== null )?
 					"data/"+ aname +"-"+ part +".js":
-					"/js-demos/data/"+ aname +"-"+ part +".js" ;	
+					"https://s3-us-west-1.amazonaws.com/real-currents/js-demos/data/"+ aname +"-"+ part +".js" ;
 		sr.src = fname;
 		document.body.appendChild(sr);
 		if( (part < 99) && (!single) )
@@ -124,11 +124,11 @@ var canvasApp = function canvasApp(cv) {
 	}
 	return true;
   };
-    
+
 if(! fftReady ) {
 	Debugger.log( "Progress "+ fftProgress.length +"%" );
 	statsBox.innerHTML = statsBox.innerHTML.match(/.+\.\.\./)[0] + fftProgress.length +"%";
-	if( fftProgress < 0 ) { 
+	if( fftProgress < 0 ) {
 		for( var p=fftProgress, z=10; p<z; p++) {
 			fftLoad(audioName, p, true);
 		}
@@ -148,14 +148,14 @@ if(! fftReady ) {
 if( appStarted ) return appStarted;
 
   var time = 0;
-  
+
   /* Textual stuff */
   var announcement = document.title;
   var title = (window.text_title) ? window.text_title.innerHTML: "The Stylogical Map";
   //Debugger.log( title );
   var copy = (window.text_copy) ? window.text_copy.innerHTML.split(/[\n|\r]/): "";
   //Debugger.log( copy );
-	
+
   /* Audio visualization stuff */
   var aidx = canvasApp.aidx = 0;
   var aBuffer = canvasApp.aBuffer = [];
@@ -188,7 +188,7 @@ if( appStarted ) return appStarted;
 			a[j] = curveh;
 			f[j] = afv[1];
 			v[j] = afv[2];
-			
+
 		}
 		aBuffer.push(a);
 		fBuffer.push(f);
@@ -198,7 +198,7 @@ if( appStarted ) return appStarted;
 	fftLoad(audioName, 10);
 	//Debugger.log( "Total frames: "+ (aBuffer.length) );
   } else for( var i=0, z=2000; i<z; i++ ) aBuffer.push(0.5);
-	
+
 	var aCanvas = document.createElement('canvas');
 	var bCanvas = document.createElement('canvas');
 	aCanvas.width = bCanvas.width = w>>2; //aBuffer[0].length;
@@ -206,11 +206,11 @@ if( appStarted ) return appStarted;
 	var actx = canvasApp.actx = aCanvas.getContext('2d');
 	var bctx = canvasApp.bctx = bCanvas.getContext('2d');
 	//audio.play();
- 
+
   /* Draw main function */
-  
+
   function draw (ctx,w,h) {
-	  
+
 	var actx = canvasApp.actx;
 	var bctx = canvasApp.bctx;
 
@@ -221,7 +221,7 @@ if( appStarted ) return appStarted;
 	if( time%2 ) {
 		bctx.clearRect(0, 0, w, h);
 
-		aidx = canvasApp.aidx = 
+		aidx = canvasApp.aidx =
 		  graphSamples(actx, audio, aBuffer, fBuffer, vBuffer, aidx, w, h);
 		ctx.drawImage(aCanvas, 0, 0, (w>>1), h);
 		ctx.save();
@@ -278,7 +278,7 @@ if( appStarted ) return appStarted;
 	//Debugger.log( "aBuffer index: "+ aidx );
 	if( aidx < 100 ) {
 		ctx.font = "bold "+ aidx*2 +"px Comfortaa";
-		if( aidx%2 === 0) { 
+		if( aidx%2 === 0) {
 			ctx.fillText(announcement, 24, h>>1);
 		} else ctx.strokeText(announcement, 24, h>>1);
 	} else if( aidx > 300 ) {
@@ -295,10 +295,10 @@ if( appStarted ) return appStarted;
 
 	Debugger.log( "time: "+ time );
   }
-  
+
   /* Graph samples */
   function graphSamples( ctx, audio, abuf, fbuf, vbuf, aidx, w, h ) {
-	  
+
 	try {
 		if( abuf.length < 1 ) return aidx;
 		if( audio.paused ) return aidx;
@@ -309,11 +309,11 @@ if( appStarted ) return appStarted;
 			return aidx;
 		}
 		//Debugger.log( "aBuffer index: "+ idx );
-		
+
 		//ctx.clearRect(0, 0, w, h);
 		//ctx.fillStyle = 'rgba(0,0,0,0.25)';
 		//ctx.fillRect(0, 0, w, h);
-		
+
 		/* Reset canvas ctx properties */
 		ctx.globalCompositeOperation = "source-over";
 		ctx.globalAlpha = 1.0;
@@ -325,8 +325,8 @@ if( appStarted ) return appStarted;
 		if( idx < 1 ) {
 			ctx.moveTo( 0, hcorrect );
 		} else ctx.moveTo( 0, -(abuf[idx][0]*2*hcorrect) + hcorrect  );
-		
-		
+
+
 		ctx.beginPath();
 		for( var i=0, z=abuf[idx].length, n=z; i<z; i++ ) {
 			/* Draw a curve of the amplitude data */
@@ -337,10 +337,10 @@ if( appStarted ) return appStarted;
 					(i-1), abuf[idx][i]-2,
 					i, abuf[idx][i]
 				);
-			} 	
+			}
 		}
 		ctx.stroke();
-			
+
 		ctx.beginPath();
 		var verts = 6;
 		for( var i=0, z=abuf[idx].length, n=z; i<z; i++ ) {
@@ -365,12 +365,12 @@ if( appStarted ) return appStarted;
 				//ctx.fillText( vbuf[idx][i]*360, i*24, barh-10 );
 			}
 		}
-		
+
 		polygon(ctx, verts, idx%(w)-(w>>3), idx%(h), (parseFloat(amp2+amp1)/2)*w, idx, 0);
 		ctx.stroke();
-		
+
 		return ++idx;
-		
+
 	} catch(e) {
 		Debugger.log( "graphSamples failed: " + e.message +" at frame "+ aidx +"\n"+ e.stack );
 		return aidx;
@@ -389,7 +389,7 @@ if( appStarted ) return appStarted;
     c.moveTo(x + r*Math.sin(angle),
              y - r*Math.cos(angle));
     var delta = 2*Math.PI/n;
-    //For remaining verts, 
+    //For remaining verts,
     for (var i=1; i < n; i++) {
       //compute angle of this vertex,
       angle += counterclockwise ? -delta : delta;
@@ -399,7 +399,7 @@ if( appStarted ) return appStarted;
     }
     //Connect last vertex back to first
     c.closePath();
-    
+
     if (order === (null || "last")) {
       //Fill the poly
       c.fill();
@@ -416,8 +416,8 @@ if( appStarted ) return appStarted;
     Debugger.log("Draw loop started");
 	appStarted = true;
 	return appStarted;
-  } catch(e) { 
-    Debugger.log("drawLoop failed to start"); 
+  } catch(e) {
+    Debugger.log("drawLoop failed to start");
     return;
   }
 };
@@ -432,7 +432,7 @@ canvasApp.updateFFT = function(prog) { setTimeout( function(prog) {
   var firstBreak = false;
   var w = canvasApp.cv.width, h = canvasApp.cv.height;
   var hcorrect =  h / 2;
-  if( 
+  if(
 	  typeof sBuffer !== 'object' ||
 	  typeof aBuffer !== 'object' ||
 	  typeof fBuffer !== 'object' ||
@@ -440,7 +440,7 @@ canvasApp.updateFFT = function(prog) { setTimeout( function(prog) {
 	) return Debugger.log( "canvas Buffers are undefined");
   Debugger.log( "Progress "+ fftProgress.length +"%" );
   if( fftProgress.length < 10 ) return;
-  
+
   if( sBuffer.length > 0 ) {
 	var idx = ( aidx > aBuffer.length )? aidx: (aBuffer.length-1);
 	for( var i=0, z=aBuffer.length; i<z; i++ ) {
