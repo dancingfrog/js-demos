@@ -111,12 +111,9 @@ var canvasApp = function canvasApp(cv) {
 	} else {
 		var sr = document.createElement('script'),
 			fname = (part < 10)?
-				( location.pathname.match(/(?:visualizer\.html|happy-b-day\.html)/) !== null )?
-					"data/"+ aname +"-0"+ part +".js":
 					"https://s3-us-west-1.amazonaws.com/real-currents/js-demos/data/"+ aname +"-0"+ part +".js" :
-				( location.pathname.match(/(?:visualizer\.html|happy-b-day\.html)/) !== null )?
-					"data/"+ aname +"-"+ part +".js":
 					"https://s3-us-west-1.amazonaws.com/real-currents/js-demos/data/"+ aname +"-"+ part +".js" ;
+	    sr.setAttribute("type", "text/javascript");
 		sr.src = fname;
 		document.body.appendChild(sr);
 		if( (part < 99) && (!single) )
