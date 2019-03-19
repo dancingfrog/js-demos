@@ -1,8 +1,3 @@
-/* Accelerated Visualizing
- * I've had some success with analyzing an audio file and visualizing the output.
- * Now I would like to speed up the drawing algorithms
- */
-
 var sBuffer = [],
 	fftReady = false,
 	fftProgress = -1,
@@ -18,7 +13,7 @@ statsBox.style.marginTop = "-180px";
 statsBox.style.marginLeft = "42.5%";
 statsBox.style.color = "#FFFFFF";
 statsBox.style.textAlign = "center";
-statsBox.innerHTML = ( location.pathname.match(/(?:visualizer\.html|happy-b-day\.html)/)!==null )?
+statsBox.innerHTML = ( location.pathname.match(/(\.html)/)!==null )?
 	'<img src="images/bw-loader.gif" /><br />Loading... ':
 	'<img src="/js-demos/images/bw-loader.gif" /><br />Loading... ';
 
@@ -47,14 +42,29 @@ var canvasApp = function canvasApp(cv) {
 		return {audioReady:true};
 	  })();
 	window.canvasApp.canDrawVideo = true;
+    window.addEventListener('keydown', function(event) {
+        if(!event) var event = window.event; // cross-browser shenanigans
+        if(event.keyCode === 32) { // this is the spacebar
+            if( window.audio.paused ) window.audio.play();
+            else window.audio.pause();
+            event.preventDefault();
+        }
+        return true; // treat all other keys normally;
+    });
 	/* END Global Vars */
 
 	/* Get canvas properties */
-	var canvas = canvasApp.cv = (typeof canvasApp.cv === "object")? canvasApp.cv: cv ;
-	//Debugger.log( "Using canvas '"+ canvas.id +"'\n" );
+	var canvas =
+        canvasApp.cv = (typeof canvasApp.cv === "object")?
+                        canvasApp.cv:
+                        cv;
+
+	Debugger.log( "Using canvas '"+ canvas.id +"'\n" );
 	canvas.id = "layer1";
 	canvas.alt = "Interactive Audio Visualizer";
-	canvas.src = "http://"+ window.location.host +"/js-demos/visualizer.png";
+	canvas.src = (location.pathname.match(/(\.html)/) !== null)?
+        "visualizer.png":
+	   "http://"+ window.location.host +"/js-demos/visualizer.png";
 	canvas.width = canvas.width || "1024";
 	canvas.height = canvas.height || "576";
 	canvas.setAttribute( 'onmouseover', 'canvasApp.mouseOver=true;' );
@@ -63,29 +73,45 @@ var canvasApp = function canvasApp(cv) {
 	canvasApp.mouseOver = false;
 	canvasApp.mouseEvent = 0;
 	canvasApp.tx = 0;
-	canvasApp.strokeStyle = 'rgba(50%,100%,50%,1.0)';
+	canvasApp.strokeStyle = (window['foreground01']) ? window['foreground01'].style.color : 'rgb(127,255,127)';
+	canvasApp.blockStyle = 'hsla(150,100%,100%,1.0)';
+	var strokeR = (window['foreground02']) ?
+				    window['foreground02'].style.color.match(/rgb\((\d+)/)[1] :
+					(canvasApp.blockStyle && canvasApp.blockStyle.match(/rgb\((\d+)/) !== null)?
+                    canvasApp.blockStyle.match(/rgb\((\d+)/)[1] :
+                    "hsl(180, 100%, 100%)",
+		strokeB = (window['foreground03']) ?
+					window['foreground03'].style.color.match(/rgb\(\d+,[\s|\d]+,([\s|\d]+)/)[1] :
+					(canvasApp.blockStyle && canvasApp.blockStyle.match(/rgb\((\d+)/) !== null)?
+                    canvasApp.blockStyle.match(/rgb\((\d+)/)[1] :
+                    "hsl(180, 100%, 100%)";
 	canvasApp.colorChange = function(evt){
-		clearInterval(this.mouseEvent);
-		if( canvasApp.mouseOver ) window.mouseEvent = setTimeout( function(evt) {
-			var width = window.innerWidth,
-				height = window.innerHeight;
-			//Debugger.log( "width: "+ width +" mouse x: "+ evt.clientX );
-			var strokeB, strokeR = canvasApp.strokeStyle.match(/rgba\((\d+)\%/)[1];
-			if( strokeR === null ) {
-				strokeR = 50;
-			} else {
-				strokeR = parseFloat(strokeR)/2;
-				if( strokeR > 49 ) strokeR--;
-				if( strokeR < 1 ) strokeR++;
-			}
-			strokeB = 50 - strokeR;
-			if(evt.clientX > width/2) {
-				canvasApp.strokeStyle = 'rgba('+ (++strokeR)*2 +'%,100%,'+ (--strokeB)*2 +'%,1.0)';
-			} else {
-				canvasApp.strokeStyle = 'rgba('+ (--strokeR)*2 +'%,100%,'+ (++strokeB)*2 +'%,1.0)';
-			}
-			//Debugger.log( canvasApp.strokeStyle );
-		}, 33, evt);
+		 clearInterval(this.mouseEvent);
+
+		 if( canvasApp.mouseOver ) window.mouseEvent = setTimeout( function(evt) {
+		 	var width = window.innerWidth,
+		 		height = window.innerHeight;
+//		 	Debugger.log( "width: "+ width +" mouse x: "+ evt.clientX );
+		 	if(! strokeR ) {
+		 		strokeR = 127;
+		 		strokeB = 255;
+		 	} else {
+		 		strokeR = parseInt(strokeR/2);
+		 		if( strokeR > 127 ) strokeR--;
+		 		if( strokeR < 1 ) strokeR++;
+		 		strokeB = parseInt(strokeB);
+		 		if( strokeB > 255 ) strokeB--;
+		 		if( strokeB < 1 ) strokeB++;
+		 	}
+		 	if(evt.clientX > width/2) {
+		 		canvasApp.blockStyle = 'rgb('+ (strokeR++) +',127,'+ (strokeB++) +')';
+		 	} else {
+		 		canvasApp.blockStyle = 'rgb('+ (strokeR--) +',127,'+ (strokeB--) +')';
+		 	}
+//		 	Debugger.log( canvasApp.strokeStyle );
+		 }, 33, evt);
+
+        return true;
 	};
 
   /* Insert loader just after the canvas */
@@ -111,9 +137,8 @@ var canvasApp = function canvasApp(cv) {
 	} else {
 		var sr = document.createElement('script'),
 			fname = (part < 10)?
-					"https://s3-us-west-1.amazonaws.com/real-currents/js-demos/data/"+ aname +"-0"+ part +".js" :
-					"https://s3-us-west-1.amazonaws.com/real-currents/js-demos/data/"+ aname +"-"+ part +".js" ;
-	    sr.setAttribute("type", "text/javascript");
+				"https://s3-us-west-1.amazonaws.com/real-currents/js-demos/data/"+ aname +"-0"+ part +".js" :
+				"https://s3-us-west-1.amazonaws.com/real-currents/js-demos/data/"+ aname +"-"+ part +".js" ;
 		sr.src = fname;
 		document.body.appendChild(sr);
 		if( (part < 99) && (!single) )
@@ -206,81 +231,164 @@ if( appStarted ) return appStarted;
 
   /* Draw main function */
 
-  function draw (ctx,w,h) {
+  function draw (ctx, w, h) {
 
-	var actx = canvasApp.actx;
-	var bctx = canvasApp.bctx;
+	var actx = canvasApp.actx,
+        bctx = canvasApp.bctx;
+
+    function drawPictures (context, pictures) {
+        var pidx = 0,
+            change = 223;
+
+        if( aidx > change ) pidx = parseInt(aidx/change)%(pictures.length);
+        if( aidx < 10 ) {
+            context.globalCompositeOperation = "source-out";
+            context.globalAlpha = 0.05;
+        } else if( aidx%change < 3 || (change - 3) < aidx%change) {
+            context.globalCompositeOperation = "source-out";
+            context.globalAlpha = 0.25;
+        } else if( aidx%change < 6 || (change - 6) < aidx%change) {
+            context.globalCompositeOperation = "screen";
+            context.globalAlpha = 0.50;
+        } else {
+            context.globalCompositeOperation = "source-in";
+            context.globalAlpha = 1.0;
+        }
+        context.drawImage(pictures[pidx], (canvas.width/2 - pictures[pidx].width), -40, pictures[pidx].width*2, pictures[pidx].height*2);
+
+    }
+
+    function drawVideo (context, video) {
+         var pidx = 0,
+             change = 223;
+
+         if( aidx < 10 ) {
+             context.globalCompositeOperation = "source-out";
+             context.globalAlpha = 0.05;
+         } else if( aidx%change < 3 || (change - 3) < aidx%change) {
+             context.globalCompositeOperation = "source-out";
+             context.globalAlpha = 0.25;
+         } else if( aidx%change < 6 || (change - 6) < aidx%change) {
+             context.globalCompositeOperation = "screen";
+             context.globalAlpha = 0.50;
+         } else {
+             context.globalCompositeOperation = "source-in";
+             context.globalAlpha = 1.0;
+         }
+
+        /* Draw video input, if any */
+        if( window.canvasApp.canDrawVideo === true ) try {
+            var cCanvas = document.createElement('canvas');
+            var cctx = cCanvas.getContext('2d');
+            var vx = 0;
+
+            cCanvas.width = w/2;
+            cCanvas.height = video.videoHeight;
+            cctx.globalAlpha = 1.0
+
+            vx =( video !== null )? (canvas.width/2 - video.videoWidth/2): 0;
+            if ( (video !== null) && (video.readyState > 2) && (!video.paused) )
+                cctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+
+            ctx.globalAlpha = 1.0;
+            ctx.save();
+            ctx.drawImage(cCanvas, 0, 0, w/2, video.videoHeight);
+//            setTimeout(function () {
+                ctx.translate(w, 0);
+                ctx.scale(-1, 1);
+                ctx.drawImage(cCanvas, 0, 0, w/2, video.videoHeight);
+                ctx.restore();
+//            }, 1);
+
+//            cctx.drawImage(aCanvas, 1, 2, (w>>2)-1, h-4);
+//            cctx.fillStyle = "rgba(0%,0%,0%,0.005)";
+//            cctx.fillRect(0, 0, w, h);
+
+        } catch (err) {
+            Debugger.on = true;
+            Debugger.log("Failed to draw "+ video.id +": "+ err.stack);
+            window.canvasApp.canDrawVideo = false;
+            Debugger.on = false;
+        }
+
+        Debugger.log( "time: "+ time );
+    }
 
 	ctx.globalCompositeOperation = "source-over";
 	ctx.globalAlpha = 1.0;
 
-  try {
-	if( time%2 ) {
-		bctx.clearRect(0, 0, w, h);
+    try {
+        if( time%2 ) {
+            //Debugger.on = true;
 
-		aidx = canvasApp.aidx =
-		  graphSamples(actx, audio, aBuffer, fBuffer, vBuffer, aidx, w, h);
-		ctx.drawImage(aCanvas, 0, 0, (w>>1), h);
-		ctx.save();
-		ctx.translate(w, 0);
-		ctx.scale(-1, 1);
-		ctx.drawImage(aCanvas, 0, 0, (w>>1), h);
-		ctx.restore();
+            bctx.clearRect(0, 0, w, h);
+            context.globalCompositeOperation = "source-over";
+            context.globalAlpha = 1.0;
 
-		bctx.drawImage(aCanvas, 1, 2, (w>>2)-1, h-4);
-		bctx.fillStyle = "rgba(0%,0%,0%,0.005)";
-		bctx.fillRect(0, 0, w, h);
-	} else {
-		actx.clearRect(0, 0, w, h);
-		actx.drawImage(bCanvas, 1, 2, (w>>2)-1, h-4);
-		actx.fillStyle = "rgba(0%,0%,0%,0.025)";
-		actx.fillRect(0, 0, w, h);
-	}
-  } catch(err) {
-	Debugger.on = true;
-	Debugger.log("Failed to draw : "+ err.stack);
-	Debugger.on = false;
-  }
+            if( window.pictures && window.pictures.children.length > 0 ) {
+                drawPictures(ctx, window.pictures.children);
+                ctx.globalCompositeOperation = "multiply";
+                ctx.globalAlpha = 0.05;
 
-	/* Draw video input, if any */
-	var video = audio;
-	if( window.canvasApp.canDrawVideo === true ) try {
-		var vx = 0;
-		vx =( video !== null )? (canvas.width/2 - video.videoWidth/2): 0;
-		ctx.globalCompositeOperation = "lighter";
-		if ( (video !== null) && (video.readyState > 2) && (!video.paused) )
-			ctx.drawImage(video, vx, 0, video.videoWidth, video.videoHeight);
-		/* Composite fill blue background with tranparency tied to bass v */
-		ctx.globalCompositeOperation = "source-atop";
-		ctx.fillStyle = "rgba(0%, 0%, 100%, "+ (0.5 - vBuffer[aidx][0]*2) +")";
-		ctx.fillRect(vx, 0, video.videoWidth, video.videoHeight);
-		/* Now fill red background tied to snare v */
-		ctx.fillStyle = "rgba(100%, 0%, 0%, "+ (0.25 - vBuffer[aidx][5]*2) +")";
-		ctx.fillRect(vx, 0, video.videoWidth, video.videoHeight);
-		/* Now fill green background */
-		ctx.fillStyle = "rgba(0%, 100%, 0%, "+ (0.25 - vBuffer[aidx][12]*2) +")";
-		ctx.fillRect(vx, 0, video.videoWidth, video.videoHeight);
-		ctx.globalCompositeOperation = "source-over";
+            } else if( window.canvasApp.canDrawVideo === true ) {
+                drawVideo(actx, audio);
+                ctx.globalCompositeOperation = "multiply";
+                ctx.globalAlpha = 0.5;
+            }
+
+            for( var o = 6; o > 0; o-- ) {
+                aidx = canvasApp.aidx =
+                  graphSamples(actx, audio, aBuffer, fBuffer, vBuffer, aidx, w, h, o);
+            }
+            ctx.globalAlpha = 1.0;
+            ctx.drawImage(aCanvas, 0, 0, (w>>1), h);
+            ctx.save();
+            ctx.translate(w, 0);
+            ctx.scale(-1, 1);
+            ctx.drawImage(aCanvas, 0, 0, (w>>1), h);
+            ctx.restore();
+
+            bctx.drawImage(aCanvas, 1, 2, (w>>2)-1, h-4);
+            bctx.fillStyle = "rgba(0%,0%,0%,0.005)";
+            bctx.fillRect(0, 0, w, h);
+
+        } else {
+            actx.clearRect(0, 0, w, h);
+
+            actx.drawImage(bCanvas, 1, 2, (w>>2)-1, h-4);
+            actx.fillStyle = (window['background02']) ? window['background02'].style.color : "rgba(0%,0%,0%,0.025)";
+            actx.fillRect(0, 0, w, h);
+        }
+
 	} catch (err) {
+
+        ctx.globalCompositeOperation = "source-over";
+        ctx.globalAlpha = 1.0;
+
 		Debugger.on = true;
-		Debugger.log("Failed to draw "+ video.id +": "+ err.stack);
+		Debugger.log("Failed to draw: "+ err.stack);
 		window.canvasApp.canDrawVideo = false;
 		Debugger.on = false;
 	}
 
+	ctx.globalCompositeOperation = "source-over";
+	ctx.globalAlpha = 1.0;
+
 	/* Text */
 	ctx.lineWidth = 2;
-	ctx.fillStyle = "#777";
-	ctx.strokeStyle = "#fff";
+	ctx.fillStyle =  (window['foreground01']) ? window['foreground01'].style.color : "hsl(180, 100%, 100%)";
+	ctx.strokeStyle = (window['foreground02']) ? window['foreground02'].style.color : "#fff";
 	//Debugger.log( "aBuffer index: "+ aidx );
 	if( aidx < 100 ) {
 		ctx.font = "bold "+ aidx*2 +"px Comfortaa";
+
 		if( aidx%2 === 0) {
 			ctx.fillText(announcement, 24, h>>1);
 		} else ctx.strokeText(announcement, 24, h>>1);
+
 	} else if( aidx > 300 ) {
 		ctx.font = "bold 12px Verdana";
-		ctx.fillText(title, 24, 128);
+		ctx.fillText(title, 64, 128);
 		if( (aidx > 1500) && (aidx < 3500) ) for(var i=0, z=copy.length; i<z; i++)
 			ctx.fillText(copy[i], w>>1, (2500 - aidx) + (i*20) );
 	}
@@ -290,26 +398,23 @@ if( appStarted ) return appStarted;
 	  time = 0;
 	}
 
-	Debugger.log( "time: "+ time );
+	//Debugger.log( "time: "+ time );
   }
 
   /* Graph samples */
-  function graphSamples( ctx, audio, abuf, fbuf, vbuf, aidx, w, h ) {
+  function graphSamples( ctx, audio, abuf, fbuf, vbuf, aidx, w, h, o ) {
 
 	try {
 		if( abuf.length < 1 ) return aidx;
 		if( audio.paused ) return aidx;
 		if(! (audio.readyState > 3) ) return aidx;
-		var idx = Math.floor( audio.currentTime*15.02 );
-		if(! abuf[idx] ) {
+
+		var idx = Math.floor( audio.currentTime*15.03 ) - 6;
+		if(! abuf[parseInt(idx + o)] ) {
 			Debugger.log( "abuf["+ idx +"] has not been recieved\n" );
 			return aidx;
 		}
 		//Debugger.log( "aBuffer index: "+ idx );
-
-		//ctx.clearRect(0, 0, w, h);
-		//ctx.fillStyle = 'rgba(0,0,0,0.25)';
-		//ctx.fillRect(0, 0, w, h);
 
 		/* Reset canvas ctx properties */
 		ctx.globalCompositeOperation = "source-over";
@@ -321,45 +426,42 @@ if( appStarted ) return appStarted;
 		 */
 		if( idx < 1 ) {
 			ctx.moveTo( 0, hcorrect );
-		} else ctx.moveTo( 0, -(abuf[idx][0]*2*hcorrect) + hcorrect  );
+		} else ctx.moveTo( 0, -(abuf[parseInt(idx + o)][0]*2*hcorrect) + hcorrect  );
 
-
-		ctx.beginPath();
-		for( var i=0, z=abuf[idx].length, n=z; i<z; i++ ) {
-			/* Draw a curve of the amplitude data */
-			if( i > 0 ) {
-				ctx.strokeStyle = "rbg(127,127,255)";
-				ctx.strokeWidth = 24;
-				ctx.quadraticCurveTo(
-					(i-1), abuf[idx][i]-2,
-					i, abuf[idx][i]
-				);
-			}
-		}
-		ctx.stroke();
+		var verts = 6,
+			hidx = parseInt(idx + o);
 
 		ctx.beginPath();
-		var verts = 6;
-		for( var i=0, z=abuf[idx].length, n=z; i<z; i++ ) {
+        if( aidx%6 ) canvasApp.blockStyle = (window['foreground02']) ? window['foreground02'].style.color : "hsl(180, 100%, 100%)";
+        else canvasApp.blockStyle = (window['foreground03']) ? window['foreground03'].style.color : "hsl(180, 100%, 100%)";
+
+        ctx.fillStyle = canvasApp.blockStyle.replace(/,\s?0\.\d+\)/, ",1.0)");
+		for( var i=0, z=abuf[hidx].length, n=z; i<z; i++ ) {
 			/* Draw a curve of the amplitude data */
 			if( i > 0 ) {
 				ctx.strokeStyle = canvasApp.strokeStyle;
 				ctx.strokeWidth = canvasApp.strokeWidth;
 				ctx.quadraticCurveTo(
-					(i-1)*4, abuf[idx][i],
-					i*4, abuf[idx][i]
+					(i-1)*4, abuf[hidx][i] + o,
+					i*4, abuf[hidx][i] + o
 				);
 			}
 			/* Draw bars for the eq levels (fft) data */
-			var barh = h - vbuf[idx][i]*h;
+			var barh = h - vbuf[hidx][i]*h;
 			amp2 = amp1;
-			amp1 = (i === 3 && vbuf[idx][i] > 0.05)? vbuf[idx][i] : amp1;
-			verts = (amp2 !== amp1)? parseInt(Math.rand()*10) : verts;
+			amp1 = (i === 3 && vbuf[hidx][i] > 0.05)? vbuf[hidx][i] : amp1;
+			verts = (amp2 !== amp1)? parseInt(Math.random()*10) : verts;
 			if( (i <= n) ) {
-				var freq = Math.floor(fbuf[idx][i]);
-				ctx.fillStyle = "hsl("+ (300 - vbuf[idx][i]*360) +", 100%, 50%)";
+				var freq = Math.floor(fbuf[hidx][i]);
+				//ctx.fillStyle = "hsl("+ (200 - vbuf[parseInt(idx + o)][i]*180) +", 100%, 50%)";
+				ctx.fillStyle = canvasApp.blockStyle.replace(
+                                    /,\s?0\.\d+\)/,
+                                    ",1.0)"
+                                ).replace(
+                                    /hsla\((150),\s?(100)\%,\s?(70)\%/,
+                                    "hsla($1, "+ (vbuf[parseInt(idx + o)][i]*50) +"%, $3%"
+                                );
 				ctx.fillRect( i*4, barh, 4, h );
-				//ctx.fillText( vbuf[idx][i]*360, i*24, barh-10 );
 			}
 		}
 
@@ -409,7 +511,7 @@ if( appStarted ) return appStarted;
   try {
     var context = canvas.getContext('2d');
 	time = 0;
-    drawLoop = setInterval(draw,31,context,canvas.width,canvas.height);
+    drawLoop = setInterval(draw, 31, context, canvas.width, canvas.height);
     Debugger.log("Draw loop started");
 	appStarted = true;
 	return appStarted;
