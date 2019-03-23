@@ -287,18 +287,18 @@ if( appStarted ) return appStarted;
             cCanvas.height = video.videoHeight;
             cctx.globalAlpha = 1.0
 
-            vw = (video != null ) ? video.videoWidth/2 : canvas.width/2;
-            vx = (video != null ) ? cCanvas.width - video.videoWidth/2 : cCanvas.width/2;
+            vw = canvas.width/2;
+            vx = (video != null ) ? cCanvas.width/2 - video.videoWidth/2 : cCanvas.width;
             if ( (video != null) && (video.readyState > 2) && (!video.paused) )
                 cctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
 
             ctx.globalAlpha = 1.0;
             ctx.save();
-            ctx.drawImage(cCanvas, vx, 0, vw, video.videoHeight);
+            ctx.drawImage(cCanvas, 0, 0, vw, canvas.height);
 //            setTimeout(function () {
                 ctx.translate(w, 0);
                 ctx.scale(-1, 1);
-                ctx.drawImage(cCanvas, vx, 0, vw, video.videoHeight);
+                ctx.drawImage(cCanvas, 0, 0, vw, canvas.height);
                 ctx.restore();
 //            }, 1);
 
