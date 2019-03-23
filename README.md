@@ -6,11 +6,11 @@ These are some very loosely organized experiments, for the purpose of improving 
 Here's an equally loose index of what can be viewed online:
 
 
-[FFT Simple ](http://uni-sol.org/js-demos/fft-simple.html)
+[FFT Simple ](fft-simple.html)
 (first try at music visualization using pre-analyzed fft data)
 
 
-[FFT More ](http://uni-sol.org/js-demos/fft.html)
+[FFT More ](fft.html)
 (continues exploration of music visualization using pre-analyzed fft data)
 
 
@@ -51,21 +51,15 @@ Here's an equally loose index of what can be viewed online:
 <br /><br /><br /><br />
 
 
-[MOV16 ](http://uni-sol.org/js-demos/mov16.html)
+[MOV16 ](mov16.html)
 (output shows up in console; an emulation of an assembly MOV opperation on a 16-bit microprocessor)
 
-[Range2 Class ](http://uni-sol.org/js-demos/class.html)
+[Range2 Class ](class.html)
 (based on example from 'JavaScript Pocket Reference' by D. Flanagan, 2012)
 
-[Try 'this' ](http://uni-sol.org/js-demos/this.html)
+[Try 'this' ](this.html)
 (comparing use of 'this' v.s. vars within methods; partially based on code from 'JavaScript Enlightenment' by C. Lindley, 2012)
 
-
-[Stylogical Maps ](http://uni-sol.org/js-demos/stymaps/intro.005.html)
-(these demos were my first efforts with HTML5 Canvas, initially using the Processing.js API. Later demos in the series use direct calls to the Canvas API)
-
-![Stymaps11](http://www.uni-sol.org/js-demos/stymaps/images/stymaps11.gif) 	![Stymaps12](http://www.uni-sol.org/js-demos/stymaps/images/stymaps12.gif)
-![Stymaps15](http://www.uni-sol.org/js-demos/stymaps/images/stymaps15.gif) 	![Stymaps25](http://www.uni-sol.org/js-demos/stymaps/images/stymaps25.gif)
 
 
 <h1 id="text_title">Fathers</h1>

@@ -280,25 +280,24 @@ if( appStarted ) return appStarted;
         if( window.canvasApp.canDrawVideo === true ) try {
             var cCanvas = document.createElement('canvas');
             var cctx = cCanvas.getContext('2d');
-            var vx = 0;
-            var vw = 0;
 
-            cCanvas.width = w/2;
-            cCanvas.height = video.videoHeight;
+            cCanvas.width = canvas.width/2;
+            cCanvas.height = canvas.height;
             cctx.globalAlpha = 1.0
 
-            vw = canvas.width/2;
-            vx = (video != null ) ? cCanvas.width/2 - video.videoWidth/2 : cCanvas.width;
+			var vx = cCanvas.width - video.videoWidth/2;
+            var vw = 3 * (video.videoHeight/canvas.height * canvas.width) / 2;
+            var vh = cCanvas.height;
             if ( (video != null) && (video.readyState > 2) && (!video.paused) )
-                cctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+                cctx.drawImage(video, vx/2, 0, vw, vh);
 
             ctx.globalAlpha = 1.0;
             ctx.save();
-            ctx.drawImage(cCanvas, 0, 0, vw, canvas.height);
+            ctx.drawImage(cCanvas, 0, 0, cCanvas.width, canvas.height);
 //            setTimeout(function () {
                 ctx.translate(w, 0);
                 ctx.scale(-1, 1);
-                ctx.drawImage(cCanvas, 0, 0, vw, canvas.height);
+                ctx.drawImage(cCanvas, 0, 0, cCanvas.width, canvas.height);
                 ctx.restore();
 //            }, 1);
 
