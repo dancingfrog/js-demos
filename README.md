@@ -5,11 +5,14 @@ These are some very loosely organized experiments, for the purpose of improving 
 
 Here's an equally loose index of what can be viewed online:
 
-[FFT Simple ](fft-simple.html)
+
+[FFT Simple ](http://uni-sol.org/js-demos/fft-simple.html)
 (first try at music visualization using pre-analyzed fft data)
 
-[FFT More ](fft.html)
+
+[FFT More ](http://uni-sol.org/js-demos/fft.html)
 (continues exploration of music visualization using pre-analyzed fft data)
+
 
 ![Visualizer+](visualizer.png)
 [Visualizer (+input) ](visualizer.html)
@@ -48,7 +51,6 @@ Here's an equally loose index of what can be viewed online:
 <br /><br /><br /><br />
 
 
-
 [MOV16 ](http://uni-sol.org/js-demos/mov16.html)
 (output shows up in console; an emulation of an assembly MOV opperation on a 16-bit microprocessor)
 
@@ -59,7 +61,6 @@ Here's an equally loose index of what can be viewed online:
 (comparing use of 'this' v.s. vars within methods; partially based on code from 'JavaScript Enlightenment' by C. Lindley, 2012)
 
 
-
 [Stylogical Maps ](http://uni-sol.org/js-demos/stymaps/intro.005.html)
 (these demos were my first efforts with HTML5 Canvas, initially using the Processing.js API. Later demos in the series use direct calls to the Canvas API)
 
@@ -67,7 +68,51 @@ Here's an equally loose index of what can be viewed online:
 ![Stymaps15](http://www.uni-sol.org/js-demos/stymaps/images/stymaps15.gif) 	![Stymaps25](http://www.uni-sol.org/js-demos/stymaps/images/stymaps25.gif)
 
 
+<h1 id="text_title">Fathers</h1>
+<p id="text_copy" style="display:none;">
 
-![Creative Commons Licence](http://i.creativecommons.org/l/by-sa/3.0/nz/88x31.png)
+    Don't Give Up
 
-*These demos by [Revlin John ](mailto:revlin@uni-sol.org) are licensed under the [Creative Commons Attribution-ShareAlike 3.0 New Zealand License 2013 ](http://creativecommons.org/licenses/by-sa/3.0/nz/deed.en_GB)*
+    On Yourself
+
+    On Your Dreams
+
+    This is the moment
+
+    Your power has never been greater
+
+    Your priviledge has never stood higher
+
+    Your influence is without measure
+
+    Only your fear
+
+    Only your lost spirit
+
+    Can keep you from the promised land
+
+    The land of your ancestors
+
+    The land of your children
+
+    Where you would join them
+
+    If you would lead and follow
+
+    As your heart demands
+</p>
+
+<div id="stream" style="display:none; text-align:center">
+  <video id="aud1" preload="auto"  controls="true">
+    <source src="https://s3-us-west-1.amazonaws.com/real-currents/js-demos/video/fathers.mp4" />
+    <source src="https://s3-us-west-1.amazonaws.com/real-currents/js-demos/video/fathers.ogv" />
+  </video>
+</div>
+
+<p id="vstatus"></p>
+<p id="license" style="color:#fff">
+	<img src="http://i.creativecommons.org/l/by-sa/3.0/nz/88x31.png"  style="width: 88px;" alt="Creative Commons Licence"><br />
+	<em>These demos by <a href="mailto:john@real-currents.com">John</a> are licensed under the <a href="http://creativecommons.org/licenses/by-sa/3.0/nz/deed.en_GB">Creative Commons Attribution-ShareAlike 3.0 License, 2009-2016</a></em>
+</p>
+
+<script type="text/javascript" id="cvSrc" src="/js-demos/scripts/interact-visualizer.js"></script>
