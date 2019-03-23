@@ -1,13 +1,13 @@
 var sBuffer = [],
-	fftReady = false,
-	fftProgress = -1,
-	fftLoader = 0,
-	appStarted = false,
-	appDelay = 0,
-	statsBox = document.createElement('div');
+    fftReady = false,
+    fftProgress = -1,
+    fftLoader = 0,
+    appStarted = false,
+    appDelay = 0,
+    statsBox = document.createElement('div');
 statsBox.id = 'statBox';
 statsBox.style.width = statsBox.style.minWidth = statsBox.style.maxWidth =
-statsBox.style.height = statsBox.style.minHeight = statsBox.style.maxHeight = "120px";
+    statsBox.style.height = statsBox.style.minHeight = statsBox.style.maxHeight = "120px";
 statsBox.style.position = "relative";
 statsBox.style.marginTop = "-180px";
 statsBox.style.marginLeft = "42.5%";
@@ -483,28 +483,130 @@ if( appStarted ) return appStarted;
     if (order === (null || "first")) {
       c.beginPath();
     }
-    var angle = angle || 0;
-    var counterclockwise = counterclockwise || false;
-    //Compute vertex position and begin a subpath there
-    c.moveTo(x + r*Math.sin(angle),
-             y - r*Math.cos(angle));
-    var delta = 2*Math.PI/n;
-    //For remaining verts,
-    for (var i=1; i < n; i++) {
-      //compute angle of this vertex,
-      angle += counterclockwise ? -delta : delta;
-      //then compute position of vertex and add line
-      c.lineTo(x + r*Math.sin(angle),
-               y - r*Math.cos(angle));
-    }
-    //Connect last vertex back to first
-    c.closePath();
 
-    if (order === (null || "last")) {
-      //Fill the poly
-      c.fill();
-      //Outline the poly
-      c.stroke();
+    /* Graph samples */
+    function graphSamples(ctx, audio, abuf, fbuf, vbuf, aidx, w, h) {
+
+        try {
+            if (abuf.length < 1) return aidx;
+            if (audio.paused) return aidx;
+            if (!(audio.readyState > 3)) return aidx;
+            var idx = Math.floor(audio.currentTime * 15.02);
+            if (!abuf[idx]) {
+                Debugger.log("abuf[" + idx + "] has not been recieved\n");
+                return aidx;
+            }
+            //Debugger.log( "aBuffer index: "+ idx );
+
+            //ctx.clearRect(0, 0, w, h);
+            //ctx.fillStyle = 'rgba(0,0,0,0.25)';
+            //ctx.fillRect(0, 0, w, h);
+
+            /* Reset canvas ctx properties */
+            ctx.globalCompositeOperation = "source-over";
+            ctx.globalAlpha = 1.0;
+            ctx.font = "bold 10px Verdana";
+            var hcorrect = h / 2;
+            /* Plot each sample on line that moves from left to right
+             * until we reach the end of the screen or the end of the sample
+             */
+            if (idx < 1) {
+                ctx.moveTo(0, hcorrect);
+            } else ctx.moveTo(0, -(abuf[idx][0] * 2 * hcorrect) + hcorrect);
+
+
+            ctx.beginPath();
+            for (var i = 0, z = abuf[idx].length, n = z; i < z; i++) {
+                /* Draw a curve of the amplitude data */
+                if (i > 0) {
+                    ctx.strokeStyle = "rbg(127,127,255)";
+                    ctx.strokeWidth = 24;
+                    ctx.quadraticCurveTo(
+                        (i - 1), abuf[idx][i] - 2,
+                        i, abuf[idx][i]
+                    );
+                }
+            }
+            ctx.stroke();
+
+            ctx.beginPath();
+            var verts = 6;
+            for (var i = 0, z = abuf[idx].length, n = z; i < z; i++) {
+                /* Draw a curve of the amplitude data */
+                if (i > 0) {
+                    ctx.strokeStyle = canvasApp.strokeStyle;
+                    ctx.strokeWidth = canvasApp.strokeWidth;
+                    ctx.quadraticCurveTo(
+                        (i - 1) * 4, abuf[idx][i],
+                        i * 4, abuf[idx][i]
+                    );
+                }
+                /* Draw bars for the eq levels (fft) data */
+                var barh = h - vbuf[idx][i] * h;
+                amp2 = amp1;
+                amp1 = (i === 3 && vbuf[idx][i] > 0.05) ? vbuf[idx][i] : amp1;
+                verts = (amp2 !== amp1) ? parseInt(Math.rand() * 10) : verts;
+                if ((i <= n)) {
+                    var freq = Math.floor(fbuf[idx][i]);
+                    ctx.fillStyle = "hsl(" + (300 - vbuf[idx][i] * 360) + ", 100%, 50%)";
+                    ctx.fillRect(i * 4, barh, 4, h);
+                    //ctx.fillText( vbuf[idx][i]*360, i*24, barh-10 );
+                }
+            }
+
+            polygon(ctx, verts, idx % (w) - (w >> 3), idx % (h), (parseFloat(amp2 + amp1) / 2) * w, idx, 0);
+            ctx.stroke();
+
+            return ++idx;
+
+        } catch (e) {
+            Debugger.log("graphSamples failed: " + e.message + " at frame " + aidx + "\n" + e.stack);
+            return aidx;
+        }
+    }
+
+    /* Draw polygons */
+    function polygon(c, n, x, y, r, angle, counterclockwise, order) {
+        var order = order || null;
+        if (order === (null || "first")) {
+            c.beginPath();
+        }
+        var angle = angle || 0;
+        var counterclockwise = counterclockwise || false;
+        //Compute vertex position and begin a subpath there
+        c.moveTo(x + r * Math.sin(angle),
+            y - r * Math.cos(angle));
+        var delta = 2 * Math.PI / n;
+        //For remaining verts,
+        for (var i = 1; i < n; i++) {
+            //compute angle of this vertex,
+            angle += counterclockwise ? -delta : delta;
+            //then compute position of vertex and add line
+            c.lineTo(x + r * Math.sin(angle),
+                y - r * Math.cos(angle));
+        }
+        //Connect last vertex back to first
+        c.closePath();
+
+        if (order === (null || "last")) {
+            //Fill the poly
+            c.fill();
+            //Outline the poly
+            c.stroke();
+        }
+    }
+
+    /* Begin draw loop */
+    try {
+        var context = canvas.getContext('2d');
+        time = 0;
+        drawLoop = setInterval(draw, 31, context, canvas.width, canvas.height);
+        Debugger.log("Draw loop started");
+        appStarted = true;
+        return appStarted;
+    } catch (e) {
+        Debugger.log("drawLoop failed to start");
+        return;
     }
   }
 
@@ -522,59 +624,61 @@ if( appStarted ) return appStarted;
   }
 };
 
-canvasApp.updateFFT = function(prog) { setTimeout( function(prog) {
-  fftProgress[prog] = true;
-  Debugger.log( fftProgress[prog] );
-  var aidx = canvasApp.aidx;
-  var aBuffer = canvasApp.aBuffer;
-  var fBuffer = canvasApp.fBuffer;
-  var vBuffer = canvasApp.vBuffer;
-  var firstBreak = false;
-  var w = canvasApp.cv.width, h = canvasApp.cv.height;
-  var hcorrect =  h / 2;
-  if(
-	  typeof sBuffer !== 'object' ||
-	  typeof aBuffer !== 'object' ||
-	  typeof fBuffer !== 'object' ||
-	  typeof vBuffer !== 'object'
-	) return Debugger.log( "canvas Buffers are undefined");
-  Debugger.log( "Progress "+ fftProgress.length +"%" );
-  if( fftProgress.length < 10 ) return;
+canvasApp.updateFFT = function (prog) {
+    setTimeout(function (prog) {
+        fftProgress[prog] = true;
+        Debugger.log(fftProgress[prog]);
+        var aidx = canvasApp.aidx;
+        var aBuffer = canvasApp.aBuffer;
+        var fBuffer = canvasApp.fBuffer;
+        var vBuffer = canvasApp.vBuffer;
+        var firstBreak = false;
+        var w = canvasApp.cv.width, h = canvasApp.cv.height;
+        var hcorrect = h / 2;
+        if (
+            typeof sBuffer !== 'object' ||
+            typeof aBuffer !== 'object' ||
+            typeof fBuffer !== 'object' ||
+            typeof vBuffer !== 'object'
+        ) return Debugger.log("canvas Buffers are undefined");
+        Debugger.log("Progress " + fftProgress.length + "%");
+        if (fftProgress.length < 10) return;
 
-  if( sBuffer.length > 0 ) {
-	var idx = ( aidx > aBuffer.length )? aidx: (aBuffer.length-1);
-	for( var i=0, z=aBuffer.length; i<z; i++ ) {
-		if(! aBuffer[i] ) {
-			idx = i;
-			break;
-		}
-	}
-	for( var i=idx, z=sBuffer.length; i<z; i++ ) {
-		var a=[], f=[], v=[];
-		if( (typeof sBuffer[i] !== 'object') ) {
-			if(! firstBreak ) {
-				Debugger.log( "sBuffer has hole at "+ i +"\n" );
-				for( var p in fftProgress ) {
-					if( (p < prog) && (!fftProgress[p]) )
-					  fftLoad(audioName, p, true);
-				}
-				firstBreak = true;
-			}
-			continue;
-		}
+        if (sBuffer.length > 0) {
+            var idx = (aidx > aBuffer.length) ? aidx : (aBuffer.length - 1);
+            for (var i = 0, z = aBuffer.length; i < z; i++) {
+                if (!aBuffer[i]) {
+                    idx = i;
+                    break;
+                }
+            }
+            for (var i = idx, z = sBuffer.length; i < z; i++) {
+                var a = [], f = [], v = [];
+                if ((typeof sBuffer[i] !== 'object')) {
+                    if (!firstBreak) {
+                        Debugger.log("sBuffer has hole at " + i + "\n");
+                        for (var p in fftProgress) {
+                            if ((p < prog) && (!fftProgress[p]))
+                                fftLoad(audioName, p, true);
+                        }
+                        firstBreak = true;
+                    }
+                    continue;
+                }
 
-		for( var j=0, n=sBuffer[i].length; j<n; j++ ) {
-			var afv = sBuffer[i][j].split(',');
-			/* Draw a curve of the amplitude data */
-			var curveh = -afv[0]*hcorrect + hcorrect;
-			a[j] = curveh;
-			f[j] = afv[1];
-			v[j] = afv[2];
-		}
-		aBuffer.push(a);
-		fBuffer.push(f);
-		vBuffer.push(v);
-	}
-	Debugger.log( "Total frames: "+ (aBuffer.length) );
-  }
-}, 266, prog); };
+                for (var j = 0, n = sBuffer[i].length; j < n; j++) {
+                    var afv = sBuffer[i][j].split(',');
+                    /* Draw a curve of the amplitude data */
+                    var curveh = -afv[0] * hcorrect + hcorrect;
+                    a[j] = curveh;
+                    f[j] = afv[1];
+                    v[j] = afv[2];
+                }
+                aBuffer.push(a);
+                fBuffer.push(f);
+                vBuffer.push(v);
+            }
+            Debugger.log("Total frames: " + (aBuffer.length));
+        }
+    }, 266, prog);
+};
