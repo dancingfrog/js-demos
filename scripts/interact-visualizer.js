@@ -281,22 +281,24 @@ if( appStarted ) return appStarted;
             var cCanvas = document.createElement('canvas');
             var cctx = cCanvas.getContext('2d');
             var vx = 0;
+            var vw = 0;
 
             cCanvas.width = w/2;
             cCanvas.height = video.videoHeight;
             cctx.globalAlpha = 1.0
 
-            vx =( video !== null )? (canvas.width/2 - video.videoWidth/2): 0;
-            if ( (video !== null) && (video.readyState > 2) && (!video.paused) )
+            vw = (video != null ) ? video.videoWidth/2 : canvas.width/2;
+            vx = (video != null ) ? cCanvas.width - video.videoWidth/2 : cCanvas.width/2;
+            if ( (video != null) && (video.readyState > 2) && (!video.paused) )
                 cctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
 
             ctx.globalAlpha = 1.0;
             ctx.save();
-            ctx.drawImage(cCanvas, 0, 0, w/2, video.videoHeight);
+            ctx.drawImage(cCanvas, vx, 0, vw, video.videoHeight);
 //            setTimeout(function () {
                 ctx.translate(w, 0);
                 ctx.scale(-1, 1);
-                ctx.drawImage(cCanvas, 0, 0, w/2, video.videoHeight);
+                ctx.drawImage(cCanvas, vx, 0, vw, video.videoHeight);
                 ctx.restore();
 //            }, 1);
 
