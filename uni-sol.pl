@@ -137,11 +137,11 @@ get '/vision' => sub {
     <span id="foreground03" style="display:none; color:hsla(150, 100%, 70%, 1.0)"></span>
 
     <div id="stream" style="display:none; text-align:center">
-      <video id="aud1" preload="auto"  controls="true">
+      <video id="aud1" preload="auto" muted="true" controls="true">
         <source src="https://s3-us-west-1.amazonaws.com/real-currents/js-demos/video/the_word.mp4" />
         <source src="https://s3-us-west-1.amazonaws.com/real-currents/js-demos/video/the_word.ogx" />
       </video>
-    </div> 
+    </div>
 HTML
 
 	$self->render('vision');
@@ -154,7 +154,7 @@ get '/fathers' => sub {
 		canvasApp => '/js-demos/scripts/interact-visualizer.js'
 	);
 	$self->stash(
-		mediaDIV => q[<div id="stream" style="display:none; text-align:center"><video id="aud1" preload="auto"  controls="true"> <source src="/js-demos/video/fathers.mp4" /> <source src="/js-demos/video/fathers.ogv" /> </video></div> <a id="aud1_play" href="" onclick="(function() { audio.play(); jQuery('#home_screen').fadeOut(5333); jQuery('#transparent_background').fadeOut(5333); jQuery('#aud1_play').html('Now Playing'); } ());">Play</a> <script type="text/javascript">(function() { window.aud1_play.style.display = "none"; window.aud1.addEventListener( "loadstart", function(evt){ setTimeout( function() { window.aud1_play.style.display = "inline"; }, 15333 ); } );} ());</script>].
+		mediaDIV => q[<div id="stream" style="display:none; text-align:center"><video id="aud1" preload="auto" muted="true" controls="true"> <source src="/js-demos/video/fathers.mp4" /> <source src="/js-demos/video/fathers.ogv" /> </video></div> <a id="aud1_play" href="" onclick="(function() { audio.play(); jQuery('#home_screen').fadeOut(5333); jQuery('#transparent_background').fadeOut(5333); jQuery('#aud1_play').html('Now Playing'); } ());">Play</a> <script type="text/javascript">(function() { window.aud1_play.style.display = "none"; window.aud1.addEventListener( "loadstart", function(evt){ setTimeout( function() { window.aud1_play.style.display = "inline"; }, 15333 ); } );} ());</script>].
 					q[<h1 id="text_title">Fathers</h1><p id="text_copy" style="display:none;">].
 					qq[\nDon't Give Up\n\nOn Yourself\n\nOn Your Dreams\n\nThis is the moment\n\nYour power has never been greater\n\nYour priviledge has never stood higher\n\nYour influence is without measure\n\nOnly your fear\n\nOnly your lost spirit\n\nCan keep you from the promised land\n\nThe land of your ancestors\n\nThe land of your children\n\nWhere you would join them\n\nIf you would lead and follow\n\nAs your heart demands\n].
 					q[</p>]
