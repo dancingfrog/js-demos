@@ -17,7 +17,7 @@
            Please play in a new web browser, like Firefox or Chrome.
          </div>
        </canvas>
-    </div><a id="aud1_play" href="#" onclick="(function() { aud1_play.play(); this.innerHTML='Now Playing'; } ());">Play</a>
+    </div><a id="aud1_play" href="#" onclick="(function() { aud1.muted=false; this.innerHTML='Now Playing'; } ());">Play</a>
 
 	<h1 id="text_title">The Word</h1>
 	<p id="text_copy" style="display:none;">
@@ -25,14 +25,14 @@
 
     <span id="background01" style="display:none; color:hsla(53,8%,37%,0.005)"></span>
     <span id="background02" style="display:none; color:hsla(168,15%,65%,0.025)"></span>
-    <span id="background03" style="display:none; color:hsla(0%,0%,0%,1.0)"></span>
+    <span id="background03" style="display:none; color:hsla(0,0%,0%,1.0)"></span>
 
     <span id="foreground01" style="display:none; color:rgb(255,255,255)"></span>
     <span id="foreground02" style="display:none; color:hsla(210, 100%, 70%, 1.0)"></span>
     <span id="foreground03" style="display:none; color:hsla(150, 100%, 70%, 1.0)"></span>
 
     <div id="stream" style="display:none; text-align:center">
-      <video id="aud1" preload="auto"  controls="true">
+      <video id="aud1" preload="auto" muted="true" controls="true">
         <source src="https://s3-us-west-1.amazonaws.com/real-currents/js-demos/video/the_word.mp4" />
         <source src="https://s3-us-west-1.amazonaws.com/real-currents/js-demos/video/the_word.ogx" />
       </video>

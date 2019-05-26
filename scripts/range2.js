@@ -15,35 +15,35 @@
  *
  */
 
-function Range( from, to ) {
-	
-	/* Store the start and end points (state) of this new range object.
+function Range(from, to) {
+
+    /* Store the start and end points (state) of this new range object.
      * These are non-inherited properties that are unique to this object.
-	 * REV EDIT:
-	 * Be sure to use 'this' in all var references within prototype
-	 * methods because without that term, the method/function may
-	 * use the value that is stored in a property of the prototype 
-	 * (CLASS) rather than the value stored in the INSTANCE property
-	 * END EDIT
-	 */
-	this.from = from;
-	this.to = to;
-	
-	/* All Range objects inherit methods & props from Range.prototype. */
-	Range.prototype.includes = function(x) {
-		/* Return true if x is in the range, false otherwise */
-		return ( this.from <= x && x <= this.to );
-	};
-	Range.prototype.foreach = function( func, arg1 ) {
-		/* Invoke func once for each integer in the range */
-		for(var val=Math.ceil(this.from); val<=this.to; val++) 
-			func(val, arg1);
-	};
-	/* 'this' refers to Range.prototype in this context */
-	this.toString = function() {
-		/* Retrun a string representation of the range */
-		return "("+ this.from +"..."+ this.to +")";
-	};
+     * REV EDIT:
+     * Be sure to use 'this' in all var references within prototype
+     * methods because without that term, the method/function may
+     * use the value that is stored in a property of the prototype
+     * (CLASS) rather than the value stored in the INSTANCE property
+     * END EDIT
+     */
+    this.from = from;
+    this.to = to;
+
+    /* All Range objects inherit methods & props from Range.prototype. */
+    Range.prototype.includes = function (x) {
+        /* Return true if x is in the range, false otherwise */
+        return (this.from <= x && x <= this.to);
+    };
+    Range.prototype.foreach = function (func, arg1) {
+        /* Invoke func once for each integer in the range */
+        for (var val = Math.ceil(this.from); val <= this.to; val++)
+            func(val, arg1);
+    };
+    /* 'this' refers to Range.prototype in this context */
+    this.toString = function () {
+        /* Retrun a string representation of the range */
+        return "(" + this.from + "..." + this.to + ")";
+    };
 }
 
 1;

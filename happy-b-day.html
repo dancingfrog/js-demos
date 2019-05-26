@@ -11,13 +11,13 @@
 <body>
 
     <div id="header-canvas">
-       <canvas id='cv' width='480' height='360'  style="image-rendering:optimizespeed ! important;">
+       <canvas id='cv' width='1280' height='720'  style="image-rendering:optimizespeed ! important;">
          <div id='main-header'>
            <h1>Happy Birthday, Dad!</h1>
            Please play in a new web browser, like Firefox or Chrome.
          </div>
        </canvas>
-    </div><a id="aud1_play" href="#" onclick="(function() { aud1_play.play(); this.innerHTML='Now Playing'; } ());">Play</a>
+    </div><a id="aud1_play" href="#" onclick="(function() { aud1.muted=false; this.innerHTML='Now Playing'; } ());">Play</a>
 
 	<h1 id="text_title">Fathers</h1>
 	<p id="text_copy" style="display:none;">
@@ -54,7 +54,7 @@
 	</p>
 
     <div id="stream" style="display:none; text-align:center">
-      <video id="aud1" preload="auto"  controls="true">
+      <video id="aud1" preload="auto" muted ="true" controls="true">
         <source src="https://s3-us-west-1.amazonaws.com/real-currents/js-demos/video/fathers.mp4" />
         <source src="https://s3-us-west-1.amazonaws.com/real-currents/js-demos/video/fathers.ogv" />
       </video>
@@ -94,5 +94,8 @@
 	}
 } )();
 	</script>
+	<script id="__bs_script__">//<![CDATA[
+	    document.write("<script async src='http://localhost:9000/browser-sync/browser-sync-client.js?v=2.26.5'><\/script>".replace("HOST", location.hostname));
+	//]]></script>
 
 </body></html>
