@@ -5,6 +5,15 @@ These are some very loosely organized experiments, for the purpose of improving 
 
 Here's an equally loose index of what can be viewed online:
 
+[WebGL Video Cube](fathers.html)
+(Projection of HTML5 video onto a WebGL Cube with deformed normals)
+<br /><br /><br /><br />
+
+![Visualizer+Video](fathers.png)
+[Visualizer (+VIDEO) ](happy-b-day.html)
+(Exploration of music visualization, adding real-time compositing of HTML5 video)
+<br /><br /><br /><br />
+
 
 [FFT Simple ](fft-simple.html)
 (first try at music visualization using pre-analyzed fft data)
@@ -17,11 +26,6 @@ Here's an equally loose index of what can be viewed online:
 ![Visualizer+](visualizer.png)
 [Visualizer (+input) ](visualizer.html)
 (continues exploration of music visualization, adding mouse interaction)
-<br /><br /><br /><br />
-
-![Visualizer+Video](fathers.png)
-[Visualizer (+VIDEO) ](happy-b-day.html)
-(Exploration of music visualization, adding real-time compositing of HTML5 video)
 <br /><br /><br /><br />
 
 
