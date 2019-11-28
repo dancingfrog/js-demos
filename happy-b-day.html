@@ -19,7 +19,7 @@
        </canvas>
     </div>
 	<div style="text-align: center;">
-		<br /><a id="aud1_play" href="#" onclick="(function() { aud1.currentTime=0; aud1.muted=false; this.innerHTML='Now Playing'; } ());">Play</a>
+		<br /><a id="aud1_play" href="#" onclick="(function(evt) { aud1.currentTime=0; aud1.muted=false; evt.target.innerHTML='Now Playing'; } (event));">Play</a>
 		<br /><a href="http://www.w3.org/2010/05/video/mediaevents.html" target="_blank">Media Help</a>
 	</div>
 
